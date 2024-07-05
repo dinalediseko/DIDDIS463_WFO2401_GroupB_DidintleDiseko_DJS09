@@ -1,29 +1,22 @@
-import { showReviewTotal, populateUser, showDetails, getTopTwoReviews} from './utils'
-import { Price, Country} from './types'
-import { Review } from './interfaces'
+import { showReviewTotal, populateUser, showDetails, getTopTwoReviews } from './utils'
+import { Permissions , LoyaltyUser } from './enums'
+import { Review, Property } from './interfaces'
+import MainProperty from './classes' 
+
+// Selecting DOM elements for manipulation
 const propertyContainer = document.querySelector('.properties')
 const reviewContainer = document.querySelector('.reviews')
 const container = document.querySelector('.container')
 const button = document.querySelector('button')
 const footer = document.querySelector('.footer')
 
+// Variable to check if user is logged in
 let isLoggedIn: boolean
 
-enum Permissions {
-    ADMIN = 'ADMIN', 
-    READ_ONLY = 'READ_ONLY'
-}
-
-enum LoyaltyUser {
-    GOLD_USER = 'GOLD_USER',
-    SILVER_USER = 'SILVER_USER',
-    BRONZE_USER = 'BRONZE_USER'
-}
-
-// Reviews
+// Array of reviews with sample data
 const reviews: Review[] = [
     {
-        name: 'Sheia',
+        name: 'Sheila',
         stars: 5,
         loyaltyUser: LoyaltyUser.GOLD_USER,
         date: '01-04-2021'
@@ -42,6 +35,7 @@ const reviews: Review[] = [
     },
 ]
 
+// Sample user data
 const you = {
     firstName: 'Bobby',
     lastName: 'Brown',
@@ -51,20 +45,8 @@ const you = {
     stayedAt: ['florida-home', 'oman-flat', 'tokyo-bungalow']
 }
 
-// Array of Properties
-const properties : {
-    image: string;
-    title: string;
-    price: number;
-    location: {
-        firstLine: string;
-        city: string;
-        code: number;
-        country: string;
-    };
-    contact: [ number, string ];
-    isAvailable: boolean;
-}[] = [
+// Array of properties with sample data
+const properties : Property[] = [
     {
         image: 'images/colombia-property.jpg',
         title: 'Colombian Shack',
@@ -81,7 +63,7 @@ const properties : {
     {
         image: 'images/poland-property.jpg',
         title: 'Polish Cottage',
-        price: 34,
+        price: 30,
         location: {
             firstLine: 'no 23',
             city: 'Gdansk',
@@ -94,24 +76,38 @@ const properties : {
     {
         image: 'images/london-property.jpg',
         title: 'London Flat',
-        price: 23,
+        price: 25,
         location: {
             firstLine: 'flat 15',
             city: 'London',
-            code: 35433,
+            code: 'SW4 5XW',
             country: 'United Kingdom',
         },
         contact: [+34829374892553, 'andyluger@aol.com'],
         isAvailable: true
+    },
+    {
+        image: 'images/malaysian-hotel.jpeg',
+        title: 'Malia Hotel',
+        price: 35,
+        location: {
+            firstLine: 'Room 4',
+            city: 'Malia',
+            code: 45334,
+            country: 'Malaysia'
+        },
+        contact: [ +60349822083, 'lee34@gmail.com'],
+        isAvailable: false
     }
 ]
 
-// Functions
+// Display total number of reviews and the first reviewer's name and loyalty user status
 showReviewTotal(reviews.length, reviews[0].name, reviews[0].loyaltyUser)
 
+// Display user information if returning
 populateUser(you.isReturning, you.firstName)
 
-// Add the properties
+// Add the properties to the DOM
 for (let i = 0; i < properties.length; i++) {
     const card = document.createElement('div')
     card.classList.add('card')
@@ -123,8 +119,9 @@ for (let i = 0; i < properties.length; i++) {
     propertyContainer.appendChild(card)
 }
 
+// Function to add top two reviews to the DOM
 let count = 0
-function addReviews(array: Review[]) : void {
+function addReviews(array : Review[]) : void {
     if (!count ) {
         count++
         const topTwo = getTopTwoReviews(array)
@@ -138,7 +135,26 @@ function addReviews(array: Review[]) : void {
     }
 }
 
+// Event listener to add reviews when button is clicked
 button.addEventListener('click', () => addReviews(reviews))
 
+// Display current location and temperature in the footer
 let currentLocation : [string, string, number] = ['London', '11.03', 17]
 footer.innerHTML = currentLocation[0] + ' ' + currentLocation[1] + ' ' + currentLocation[2] + '°'
+
+// Create an instance of MainProperty and add its image to the main image container
+let yourMainProperty = new MainProperty(
+    'images/italian-property.jpg', 
+    'Italian House',
+    [{
+        name: 'Olive',
+        stars: 5,
+        loyaltyUser: LoyaltyUser.GOLD_USER,
+        date: '12-04-2021'
+    }] 
+)
+
+const mainImageContainer = document.querySelector('.main-image')
+const image = document.createElement('img')
+image.setAttribute('src', yourMainProperty.src)
+mainImageContainer.appendChild(image)
